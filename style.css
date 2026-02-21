@@ -209,6 +209,34 @@ header h1 {
   color: #bb86fc;
 }
 
+/* Drag and drop states */
+.new-album.dragging {
+  opacity: 0.4;
+}
+
+.insert-slot.drag-over {
+  border-color: #bb86fc;
+  background: rgba(187, 134, 252, 0.15);
+  width: 60px;
+}
+
+.insert-slot.drag-over::after {
+  color: #bb86fc;
+}
+
+body.drag-active .insert-slot {
+  width: 56px;
+}
+
+/* Touch drag clone */
+.touch-clone {
+  position: fixed;
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0.85;
+  transform: scale(0.9);
+}
+
 /* Placed album in timeline */
 .timeline-album {
   opacity: 1;
@@ -264,6 +292,10 @@ header h1 {
   .insert-slot {
     width: 28px;
     min-height: 100px;
+  }
+
+  body.drag-active .insert-slot {
+    width: 40px;
   }
 
   .overlay-content h1 {

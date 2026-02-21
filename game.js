@@ -379,7 +379,119 @@ function presentNextAlbum() {
   currentAlbumEl.appendChild(card.querySelector(".album-name"));
   currentAlbumEl.appendChild(card.querySelector(".album-artist"));
 
+  // Make draggable
+  currentAlbumEl.setAttribute("draggable", "true");
+  currentAlbumEl.addEventListener("dragstart", handleDragStart);
+  currentAlbumEl.addEventListener("dragend", handleDragEnd);
+
+  // Touch support
+  currentAlbumEl.addEventListener("touchstart", handleTouchStart, { passive: false });
+
   renderTimeline();
+}
+
+// --- Drag and Drop ---
+
+function handleDragStart(e) {
+  e.dataTransfer.setData("text/plain", "album");
+  e.dataTransfer.effectAllowed = "move";
+  currentAlbumEl.classList.add("dragging");
+  document.body.classList.add("drag-active");
+}
+
+function handleDragEnd() {
+  currentAlbumEl.classList.remove("dragging");
+  document.body.classList.remove("drag-active");
+  document.querySelectorAll(".insert-slot.drag-over").forEach(
+    (s) => s.classList.remove("drag-over")
+  );
+}
+
+function handleSlotDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+  e.currentTarget.classList.add("drag-over");
+}
+
+function handleSlotDragLeave(e) {
+  e.currentTarget.classList.remove("drag-over");
+}
+
+function handleSlotDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove("drag-over");
+  document.body.classList.remove("drag-active");
+  currentAlbumEl.classList.remove("dragging");
+  const slotIndex = parseInt(e.currentTarget.dataset.index, 10);
+  handlePlacement(slotIndex);
+}
+
+// --- Touch Drag ---
+
+let touchClone = null;
+let touchStarted = false;
+
+function handleTouchStart(e) {
+  if (!currentAlbum) return;
+  e.preventDefault();
+  touchStarted = true;
+
+  const touch = e.touches[0];
+
+  // Create visual clone
+  touchClone = currentAlbumEl.cloneNode(true);
+  touchClone.classList.add("touch-clone");
+  touchClone.style.width = currentAlbumEl.offsetWidth + "px";
+  touchClone.style.left = (touch.clientX - currentAlbumEl.offsetWidth / 2) + "px";
+  touchClone.style.top = (touch.clientY - 30) + "px";
+  document.body.appendChild(touchClone);
+
+  currentAlbumEl.classList.add("dragging");
+  document.body.classList.add("drag-active");
+
+  document.addEventListener("touchmove", handleTouchMove, { passive: false });
+  document.addEventListener("touchend", handleTouchEnd);
+}
+
+function handleTouchMove(e) {
+  if (!touchClone) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  touchClone.style.left = (touch.clientX - touchClone.offsetWidth / 2) + "px";
+  touchClone.style.top = (touch.clientY - 30) + "px";
+
+  // Highlight slot under finger
+  document.querySelectorAll(".insert-slot").forEach((s) => s.classList.remove("drag-over"));
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (el && el.classList.contains("insert-slot")) {
+    el.classList.add("drag-over");
+  }
+}
+
+function handleTouchEnd(e) {
+  document.removeEventListener("touchmove", handleTouchMove);
+  document.removeEventListener("touchend", handleTouchEnd);
+
+  if (touchClone) {
+    touchClone.remove();
+    touchClone = null;
+  }
+
+  currentAlbumEl.classList.remove("dragging");
+  document.body.classList.remove("drag-active");
+  document.querySelectorAll(".insert-slot.drag-over").forEach(
+    (s) => s.classList.remove("drag-over")
+  );
+
+  if (!touchStarted) return;
+  touchStarted = false;
+
+  const touch = e.changedTouches[0];
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (el && el.classList.contains("insert-slot")) {
+    const slotIndex = parseInt(el.dataset.index, 10);
+    handlePlacement(slotIndex);
+  }
 }
 
 function renderTimeline() {
@@ -396,6 +508,9 @@ function renderTimeline() {
       slot.className = "insert-slot";
       slot.dataset.index = i;
       slot.addEventListener("click", () => handlePlacement(i));
+      slot.addEventListener("dragover", handleSlotDragOver);
+      slot.addEventListener("dragleave", handleSlotDragLeave);
+      slot.addEventListener("drop", handleSlotDrop);
       timelineEl.appendChild(slot);
     }
 
@@ -453,11 +568,12 @@ function showEndScreen() {
     // Lost
     endTitle.textContent = "Game Over";
     endMessage.textContent = `"${failedAlbum.name}" by ${failedAlbum.artist} was released in ${failedAlbum.year}.`;
+    endScore.textContent = `Your score: ${score}`;
   } else {
-    // Won — placed all 19 correctly
+    // Won
     endTitle.textContent = "Celebrate good times, come on!";
     endMessage.textContent = "Perfect score! You nailed every single one.";
+    endScore.textContent = `Your score: ${score}`;
   }
-  endScore.textContent = `You placed ${score} out of ${ROUND_SIZE - 1} albums correctly.`;
   endScreen.classList.add("visible");
 }
