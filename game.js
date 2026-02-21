@@ -436,39 +436,27 @@ function handlePlacement(slotIndex) {
 
     setTimeout(() => presentNextAlbum(), 500);
   } else {
-    // Wrong — show the correct year briefly, then move on
+    // Wrong — shake and end the game
     timelineEl.classList.add("wrong-flash");
     setTimeout(() => timelineEl.classList.remove("wrong-flash"), 500);
-
-    // Still add it to the timeline so the player sees where it belongs
-    timeline.push(currentAlbum);
-    currentIndex++;
-    currentAlbum = null;
-
-    setTimeout(() => {
-      renderTimeline();
-      setTimeout(() => presentNextAlbum(), 600);
-    }, 700);
+    setTimeout(() => showEndScreen(), 700);
   }
 }
 
 function showEndScreen() {
   currentAlbumSection.style.display = "none";
+  const failedAlbum = currentAlbum;
   currentAlbum = null;
   renderTimeline();
 
-  if (score === ROUND_SIZE - 1) {
+  if (failedAlbum) {
+    // Lost
+    endTitle.textContent = "Game Over";
+    endMessage.textContent = `"${failedAlbum.name}" by ${failedAlbum.artist} was released in ${failedAlbum.year}.`;
+  } else {
+    // Won — placed all 19 correctly
     endTitle.textContent = "Celebrate good times, come on!";
     endMessage.textContent = "Perfect score! You nailed every single one.";
-  } else if (score >= 15) {
-    endTitle.textContent = "Impressive!";
-    endMessage.textContent = "You really know your music history.";
-  } else if (score >= 10) {
-    endTitle.textContent = "Nice work!";
-    endMessage.textContent = "Solid effort — you know your stuff.";
-  } else {
-    endTitle.textContent = "Game Over";
-    endMessage.textContent = "Better luck next time!";
   }
   endScore.textContent = `You placed ${score} out of ${ROUND_SIZE - 1} albums correctly.`;
   endScreen.classList.add("visible");
