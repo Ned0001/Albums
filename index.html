@@ -3,38 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Album Timeline</title>
+  <title>Track Record</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="start-screen" class="overlay visible">
     <div class="overlay-content">
-      <h1>Album Timeline</h1>
-      <p>Place albums in chronological order.<br>One wrong guess and it's game over!</p>
+      <h1>Track Record</h1>
+      <p>Place 20 albums in chronological order.<br>How many can you get right?</p>
       <button id="start-btn" class="btn">Start Game</button>
     </div>
   </div>
 
-  <div id="game-over-screen" class="overlay">
+  <div id="end-screen" class="overlay">
     <div class="overlay-content">
-      <h2>Game Over</h2>
-      <p id="game-over-message"></p>
-      <p id="game-over-score"></p>
-      <button id="restart-btn-lose" class="btn">Play Again</button>
-    </div>
-  </div>
-
-  <div id="win-screen" class="overlay">
-    <div class="overlay-content">
-      <h2>You Win!</h2>
-      <p>You placed all 8 albums correctly!</p>
-      <button id="restart-btn-win" class="btn">Play Again</button>
+      <h2 id="end-title"></h2>
+      <p id="end-message"></p>
+      <p id="end-score"></p>
+      <button id="restart-btn" class="btn">Play Again</button>
     </div>
   </div>
 
   <header>
-    <h1>Album Timeline</h1>
-    <div id="score-display">Score: <span id="score">0</span> / 8</div>
+    <h1>Track Record</h1>
+    <div id="score-display">Score: <span id="score">0</span> / 20</div>
   </header>
 
   <main>
