@@ -460,17 +460,27 @@ function handleTouchMove(e) {
   touchClone.style.left = (touch.clientX - touchClone.offsetWidth / 2) + "px";
   touchClone.style.top = (touch.clientY - 30) + "px";
 
-  // Highlight slot under finger
+  // Hide clone so elementFromPoint can see the slot beneath
+  touchClone.style.display = "none";
   document.querySelectorAll(".insert-slot").forEach((s) => s.classList.remove("drag-over"));
   const el = document.elementFromPoint(touch.clientX, touch.clientY);
   if (el && el.classList.contains("insert-slot")) {
     el.classList.add("drag-over");
   }
+  touchClone.style.display = "";
 }
 
 function handleTouchEnd(e) {
   document.removeEventListener("touchmove", handleTouchMove);
   document.removeEventListener("touchend", handleTouchEnd);
+
+  // Hide clone before hit-testing so elementFromPoint finds the slot
+  if (touchClone) {
+    touchClone.style.display = "none";
+  }
+
+  const touch = e.changedTouches[0];
+  const el = touchStarted ? document.elementFromPoint(touch.clientX, touch.clientY) : null;
 
   if (touchClone) {
     touchClone.remove();
@@ -486,8 +496,6 @@ function handleTouchEnd(e) {
   if (!touchStarted) return;
   touchStarted = false;
 
-  const touch = e.changedTouches[0];
-  const el = document.elementFromPoint(touch.clientX, touch.clientY);
   if (el && el.classList.contains("insert-slot")) {
     const slotIndex = parseInt(el.dataset.index, 10);
     handlePlacement(slotIndex);
