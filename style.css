@@ -266,6 +266,33 @@ body.drag-active .insert-slot {
   80% { transform: translateX(6px); }
 }
 
+/* Lives display */
+#lives-display {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.6rem;
+  z-index: 50;
+}
+
+.life-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  transition: background 0.3s, opacity 0.3s;
+}
+
+.life-dot.active {
+  background: #03dac6;
+}
+
+.life-dot.lost {
+  background: #444;
+  opacity: 0.4;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   header {

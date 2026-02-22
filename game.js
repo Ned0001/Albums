@@ -288,7 +288,9 @@ let timeline = [];
 let currentAlbum = null;
 let currentIndex = 0;
 let score = 0;
-const ROUND_SIZE = 20;
+let lives = 3;
+const ROUND_SIZE = 11;
+const MAX_LIVES = 3;
 
 // DOM
 const startScreen = document.getElementById("start-screen");
@@ -302,6 +304,7 @@ const timelineEl = document.getElementById("timeline");
 const endTitle = document.getElementById("end-title");
 const endMessage = document.getElementById("end-message");
 const endScore = document.getElementById("end-score");
+const livesDisplay = document.getElementById("lives-display");
 
 // Events
 startBtn.addEventListener("click", startGame);
@@ -323,7 +326,9 @@ function startGame() {
   timeline = [];
   currentIndex = 0;
   score = 0;
+  lives = MAX_LIVES;
   scoreEl.textContent = score;
+  renderLives();
 
   // Place the first album automatically
   timeline.push(pool[0]);
@@ -559,10 +564,22 @@ function handlePlacement(slotIndex) {
 
     setTimeout(() => presentNextAlbum(), 500);
   } else {
-    // Wrong — shake and end the game
+    // Wrong — lose a life
+    lives--;
+    renderLives();
     timelineEl.classList.add("wrong-flash");
     setTimeout(() => timelineEl.classList.remove("wrong-flash"), 500);
-    setTimeout(() => showEndScreen(), 700);
+
+    if (lives <= 0) {
+      setTimeout(() => showEndScreen(), 700);
+    } else {
+      // Place the album in the correct spot and continue
+      timeline.push(currentAlbum);
+      currentIndex++;
+      currentAlbum = null;
+      renderTimeline();
+      setTimeout(() => presentNextAlbum(), 700);
+    }
   }
 }
 
@@ -573,15 +590,29 @@ function showEndScreen() {
   renderTimeline();
 
   if (failedAlbum) {
-    // Lost
+    // Lost — out of lives
     endTitle.textContent = "Game Over";
     endMessage.textContent = `"${failedAlbum.name}" by ${failedAlbum.artist} was released in ${failedAlbum.year}.`;
     endScore.textContent = `Your score: ${score}`;
   } else {
     // Won
-    endTitle.textContent = "Celebrate good times, come on!";
-    endMessage.textContent = "Perfect score! You nailed every single one.";
+    if (lives === MAX_LIVES) {
+      endTitle.textContent = "Celebrate good times, come on!";
+      endMessage.textContent = "Perfect score! You nailed every single one.";
+    } else {
+      endTitle.textContent = "Nice work!";
+      endMessage.textContent = "You made it through all 10 albums.";
+    }
     endScore.textContent = `Your score: ${score}`;
   }
   endScreen.classList.add("visible");
+}
+
+function renderLives() {
+  livesDisplay.innerHTML = "";
+  for (let i = 0; i < MAX_LIVES; i++) {
+    const dot = document.createElement("span");
+    dot.className = "life-dot" + (i < lives ? " active" : " lost");
+    livesDisplay.appendChild(dot);
+  }
 }
