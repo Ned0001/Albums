@@ -513,6 +513,14 @@ function renderTimeline() {
   // Sort timeline by year for display
   timeline.sort((a, b) => a.year - b.year);
 
+  // Scale down when there are many albums
+  timelineEl.classList.remove("timeline-compact", "timeline-tight");
+  if (timeline.length >= 8) {
+    timelineEl.classList.add("timeline-tight");
+  } else if (timeline.length >= 6) {
+    timelineEl.classList.add("timeline-compact");
+  }
+
   const showSlots = currentAlbum !== null;
 
   for (let i = 0; i <= timeline.length; i++) {

@@ -209,6 +209,55 @@ header h1 {
   color: #bb86fc;
 }
 
+/* Timeline scaling for many albums */
+#timeline.timeline-compact .album-card {
+  width: 110px;
+}
+
+#timeline.timeline-compact .album-card img {
+  width: 90px;
+  height: 90px;
+}
+
+#timeline.timeline-compact .album-card .album-name {
+  font-size: 0.7rem;
+  max-width: 100px;
+}
+
+#timeline.timeline-compact .album-card .album-artist,
+#timeline.timeline-compact .album-card .album-year {
+  font-size: 0.6rem;
+}
+
+#timeline.timeline-compact .insert-slot {
+  width: 30px;
+  min-height: 110px;
+}
+
+#timeline.timeline-tight .album-card {
+  width: 85px;
+}
+
+#timeline.timeline-tight .album-card img {
+  width: 70px;
+  height: 70px;
+}
+
+#timeline.timeline-tight .album-card .album-name {
+  font-size: 0.6rem;
+  max-width: 78px;
+}
+
+#timeline.timeline-tight .album-card .album-artist,
+#timeline.timeline-tight .album-card .album-year {
+  font-size: 0.55rem;
+}
+
+#timeline.timeline-tight .insert-slot {
+  width: 24px;
+  min-height: 90px;
+}
+
 /* Drag and drop states */
 .new-album.dragging {
   opacity: 0.4;
